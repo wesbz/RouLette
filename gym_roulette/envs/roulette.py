@@ -32,7 +32,7 @@ class RouletteEnv(gym.Env):
     """
     def __init__(self, spots=37):
         self.n = spots
-        # self.action_space = spaces.MultiDiscrete([1000 for _ in range(151)])
+        # self.action_space = spaces.MultiDiscrete([10000 for _ in range(151)])
         self.action_space = spaces.Box(low=0, high=np.inf, shape=(151,))
         # self.action_space = spaces.Dict({
         #     "0":            spaces.Box(low=0, high=np.inf, shape=( 1, )),
@@ -73,6 +73,7 @@ class RouletteEnv(gym.Env):
         return [seed]
 
     def step(self, action):
+        action = np.round(10*action)
         assert self.action_space.contains(action)
         action_dict = {
             "0":            action[:1],
@@ -100,7 +101,7 @@ class RouletteEnv(gym.Env):
         self.history.append(val)
         
         if val == 0:
-            reward += action_dict["0"]*(self.gains["0"])  
+            reward += action_dict["0"][0]*(self.gains["0"])  
         
         else:
             val_arr = np.zeros((12, 3))
