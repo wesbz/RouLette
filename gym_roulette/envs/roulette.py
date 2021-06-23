@@ -33,7 +33,7 @@ class RouletteEnv(gym.Env):
     def __init__(self, spots=37):
         self.n = spots
         # self.action_space = spaces.MultiDiscrete([10000 for _ in range(151)])
-        self.action_space = spaces.Box(low=0, high=np.inf, shape=(151,))
+        self.action_space = spaces.Box(low=0, high=1, shape=(152,))
         # self.action_space = spaces.Dict({
         #     "0":            spaces.Box(low=0, high=np.inf, shape=( 1, )),
         #     "single":       spaces.Box(low=0, high=np.inf, shape=(12,3)),
@@ -64,7 +64,7 @@ class RouletteEnv(gym.Env):
             "column_bet":    2
         }
         self.red = set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36])
-        self.observation_space = spaces.Discrete(spots)
+        self.observation_space = spaces.Discrete(spots+1)
         self.history = []
         self.seed()
 
@@ -87,8 +87,12 @@ class RouletteEnv(gym.Env):
             "red_black":    action[141:143],
             "even_odd":     action[143:145],
             "dozen_bet":    action[145:148],
-            "column_bet":   action[148:]
+            "column_bet":   action[148:-1],
+            "leave":        action[-1:]
         }
+        
+        if action_dict["leave"] == 1:
+            return 38, -10, True, {"history": self.history+["leave"]}
         reward = 0
         # if action["leave"] == 1:
         #     # Leave the table
@@ -146,4 +150,5 @@ class RouletteEnv(gym.Env):
 
     def reset(self):
         self.history = []
+        self.seed()
         return 0
