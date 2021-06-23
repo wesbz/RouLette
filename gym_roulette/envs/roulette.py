@@ -73,7 +73,7 @@ class RouletteEnv(gym.Env):
         return [seed]
 
     def step(self, action):
-        action = np.round(10*action)
+        # action = np.round(1000*action)
         assert self.action_space.contains(action)
         action_dict = {
             "0":            action[:1],
@@ -122,15 +122,15 @@ class RouletteEnv(gym.Env):
             reward += np.sum(action_dict["corner"]*self.gains["corner"]*val_arr[:-1,1:])
             reward += np.sum(action_dict["corner"]*self.gains["corner"]*val_arr[:-1,:-1])
             
-            reward += np.sum(np.tile(action_dict["six_line"], (3, 1)).T*self.gains["street"]*val_arr[1:,:])
-            reward += np.sum(np.tile(action_dict["six_line"], (3, 1)).T*self.gains["street"]*val_arr[:-1,:])
+            reward += np.sum(np.tile(action_dict["six_line"], (3, 1)).T*self.gains["six_line"]*val_arr[1:,:])
+            reward += np.sum(np.tile(action_dict["six_line"], (3, 1)).T*self.gains["six_line"]*val_arr[:-1,:])
             
             eye2 = np.eye(2)
             eye3 = np.eye(3)
             
-            reward += np.sum(eye2[int(val > 18)]*action_dict["half"][0])
+            reward += np.sum(eye2[int(val > 18)]*action_dict["half"]*self.gains["half"])
             
-            reward += np.sum(eye2[int(val not in self.red)]*action_dict["red_black"])
+            reward += np.sum(eye2[int(val not in self.red)]*action_dict["red_black"]*self.gains["red_black"])
             
             reward += np.sum(eye2[val % 2]*action_dict["even_odd"]*self.gains["even_odd"])
             
